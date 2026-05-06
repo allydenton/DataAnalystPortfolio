@@ -59,15 +59,3 @@ Table: Summary Statistics Table
 |6     |   7| 19.7| 1.5|   19.7|    21.9|
 |8     |  14| 15.1| 2.6|   15.2|    43.8|
 |Total |  32| 20.1| 6.0|   19.2|   100.0|
-
-
-summary_table(mtcars, am, hp)
-
-Table: Summary Statistics Table
-
-|am    | obs|  mean|   sd| median| percent|
-|:-----|---:|-----:|----:|------:|-------:|
-|0     |  19| 160.3| 53.9|    175|    59.4|
-|1     |  13| 126.8| 84.1|    109|    40.6|
-|Total |  32| 146.7| 68.6|    123|   100.0|
-```
