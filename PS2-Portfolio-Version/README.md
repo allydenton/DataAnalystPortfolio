@@ -1,4 +1,4 @@
-# Introduction to the Project
+# Introduction to Electoral Democracy over Time
 
 This project builds on earlier work completed for a Data Analysis (SIS-750) assignment focused on telling a story through visualization. 
 The research examines patterns of democratic backsliding globally, with a more detailed focus on selected Latin American cases. 
