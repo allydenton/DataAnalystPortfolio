@@ -16,4 +16,4 @@ Please note that the map may be missing some countries due to naming issues.
 After establishing this broader context, the project narrows in on four Latin American cases: Venezuela, El Salvador, Brazil, and Ecuador. 
 For these cases, the analysis uses summary statistics and a time series visualizations to examine trends in electoral democracy and identify patterns of democratic decline or stability over time.
 
-You can view the final presentation [here](
+You can view the final presentation [here](https://github.com/allydenton/DataAnalystPortfolio/blob/ef967a89536f0002f42550cb3a748447d0e3a17a/PS2-Portfolio-Version/PS2-Portfolio-Presentation.pdf).
