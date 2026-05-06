@@ -1,4 +1,4 @@
-# Introduction to the Project
+# Introduction to the Wealth and Composite National Power Project
 
 This project builds on earlier work completed for a Data Analysis (SIS-750) assignment focused on designing and executing a mini original research project with a slide deck as the primary deliverable.
 The research examines the relationship between wealth and different dimensions of national power. 
