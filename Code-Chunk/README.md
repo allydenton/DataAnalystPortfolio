@@ -1,10 +1,15 @@
+# Exemplary Code Chunk/Function
+
+The following code chunk is a function that creates a grouped summary statistics table. 
+This function streamlines exploratory data analysis by producing consistent summary statistics across groups, while also providing an overall reference point for comparison.
+It begins by filtering out any NAs that are present in the data frame.
+Next, the data frame is grouped by the specified grouping variable and summary statistics, such as the number of observations, mean, standard deviation, median, and percent, are calculated.
+A totals row is then created that summarizes all observations across groups.
+Finally, the function formats the output into a table using the ```knitr::kable()``` function. 
+This improves the ability to compare distributions across groups in a standardized format.
 
 ```r
 # EXEMPLARY CODE CHUNK
-
-library(tidyverse)
-library(knitr)
-
 
 summary_table <- function(data, group_var, value_var) {
   
