@@ -1,0 +1,214 @@
+---
+title: "Democratic Backsliding in Latin America"
+subtitle: "How has electoral democracy changed globally and across selected Latin American countries between 2010 and 2023?"
+author: "Ally Denton"
+institute: "American University"
+format: 
+  beamer:
+    theme: Singapore
+    colortheme: seagull
+    aspectratio: 43
+knitr: 
+  opts_chunk: 
+    echo: false
+    eval: true
+    prompt: false
+    tidy: false
+    message: FALSE
+    warning: FALSE
+    fig.align: "center"
+fontsize: 10pt
+---
+
+
+```{r}
+
+library(tidyverse)
+library(haven)
+library(knitr)
+library(ggrepel)
+library(maps)
+
+```
+
+## Overview 
+
+Democratic backsliding has become a central concern in international affairs. As such, this project examines global change in electoral democracy from 2010–2023, with a focus on variation across four Latin American countries.
+
+**Central Findings**
+
+-  Democratic trajectories vary across countries due to differences in domestic leadership and external political and economic conditions.
+-  Global electoral democracy has declined modestly over the 2010–2023 period.
+-  Latin American cases show divergent trajectories, with both decline and improvement depending on the country.
+
+## Data
+
+Dataset: Varieties of Democracy 
+
+-  The dataset is structured as country-year panel data, with one observation per country-year.
+-  For this project, I am specifically looking at the span of 2010-2023 to try and optimize the data available. 
+- The Data will cover all countries that have data over this time period and also zoom in on four Latin American cases: Venezuela, Brazil, Ecuador, El Salvador.
+    - These cases were chosen to reflect variation in regime type, economic performance, and political stability.
+-  The core variable for this project is: 
+    - the v2x_polyarchy variable (the Electoral Democracy Index) 
+        - The variable measures the extent to which the ideal of electoral democracy in its fullest sense is achieved. 
+        - The variable itself uses a 0-1 scale with 0 indicating low electoral democracy and 1 indicating high electoral democracy. 
+
+## Trends in Overall Democracy Over Time
+```{r}
+#| label: tbl-avgall
+#| fig-width: 8
+#| fig-asp: 0.67
+#| tbl-cap: "Average Electoral Democracy over Time"
+
+library(knitr)
+
+vdem <- read_csv('vdem.csv')
+
+vdem %>%
+  group_by(year) %>%
+  filter(year == 2010 | year == 2023) %>%
+  summarize(
+    mean = mean(v2x_polyarchy, na.rm = T)
+  ) %>%
+  kable(digits = 2L)
+
+```
+
+- Based on @tbl-avgall, electoral democracy in the world on average has seen a decrease of .031 points on the electoral democracy index in the past decade. 
+
+## Electoral Democracy Throughout the World
+```{r}
+#| label: fig-map
+#| fig-width: 8
+#| fig-asp: 0.4
+#| fig-cap: "Change in Electoral Democracy across the World (2010–2023)"
+
+# transforming the data
+
+vdem_change <- vdem %>%
+  filter(year %in% c(2010, 2023)) %>%
+  select(country_name, year, v2x_polyarchy) %>%
+  pivot_wider(
+    names_from = year, 
+    values_from = v2x_polyarchy) %>%
+  mutate(change = `2023` - `2010`,
+         country_name = case_when(
+           country_name == 'United States of America' ~ 'USA',
+           TRUE ~ country_name))
+
+dmap <- vdem_change %>%
+  left_join(
+    map_data('world'),
+    by = c('country_name' = 'region')
+  )
+
+
+# visualization
+
+gradient.map <- dmap %>%
+ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = change), color = "white", size = 0.1) +
+  scale_fill_gradient2(
+    low = 'darkred',
+    mid = 'lightgray',
+    high = 'navy',
+    midpoint = 0) +
+  coord_fixed(1.3) +
+  labs(
+    fill = 'Change',
+    subtitle = 'Red = Backsliding | Blue = Improvement',
+    caption = 'Source: V-Dem') +
+   theme_void() +
+   theme(
+     plot.title = element_text(face = 'bold')
+   )
+
+gradient.map
+
+```
+- The global pattern indicates a small decline in electoral democracy over the period, though outcomes differ significantly across countries and regions. 
+
+## Zooming in on the Latin American Cases
+```{r}
+#| label: tbl-avgLA
+#| tbl-width: 8
+#| tbl-asp: 0.67
+#| tbl-cap: "Average Electoral Democracy over Time"
+
+latin_cases <- c('Venezuela', 'Brazil', 'Ecuador', 'El Salvador')
+
+vdem %>%
+  group_by(year, country_name) %>%
+  select(country_name, year, v2x_polyarchy) %>%
+  filter(year == 2010 | year == 2023) %>%
+  filter(country_name %in% latin_cases) %>%
+  summarize(
+    mean = mean(v2x_polyarchy, na.rm = T)
+  ) %>%
+  pivot_wider(
+    names_from = year,
+    values_from = mean
+  ) %>%
+  kable(digits = 2L)
+
+```
+- Looking at @tbl-avgLA, the average electoral democracy does decrease for the majority of these cases. 
+- Ecuador is the main exception, showing a net increase over the period.
+- Brazil remains relatively high on the electoral democracy scale despite mild fluctuation.
+
+## The Democracy Trends across Latin America over Time
+```{r}
+#| label: fig-LA
+#| fig-width: 10
+#| fig-asp: 0.4
+#| fig-cap: "Democratic Trajectories in Latin America from 2010 to 2023"
+
+demtraj <- vdem %>%
+  filter(country_name %in% latin_cases,
+         year >= 2010) %>%
+  ggplot(aes(x = year, y = v2x_polyarchy, color = country_name, linetype = country_name)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = c('springgreen4', 'gold', 'blue3', 'red2')) +
+  scale_linetype_manual(values = c(
+    'Brazil' = 'longdash',
+    'Ecuador' = 'solid',
+    'El Salvador' = 'dashed',
+    'Venezuela' = 'dotdash')) +
+  scale_x_continuous (
+    limits = c(2010, 2025), 
+    breaks = seq(2010, 2025, 5),
+    expand = expansion(mult = c(0, .1))
+                       ) +
+  scale_y_continuous(
+    limits = c(0,1),
+    breaks = seq(0, 1, .2),
+    expand = expansion(mult = c(0, .1))
+  ) +
+  labs(
+    y = 'Electoral Democracy Index',
+    x = NULL,
+    color = 'Country',
+    linetype = 'Country'
+  ) +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = 'gray90'),
+        plot.title = element_text(face = 'bold'),
+        panel.background = element_rect(fill = 'white'))
+
+demtraj
+
+```
+- Looking at @fig-LA, the Latin American cases do not follow a uniform regional pattern. 
+    - Venezuela and El Salvador exhibit sustained declines in electoral democracy, while Brazil and Ecuador show more variation, including periods of recovery or relative improvement.
+
+## Conclusion
+
+- Overall, the evidence suggests a small decline in electoral democracy globally between 2010 and 2023, though the magnitude of change is limited.
+
+- At the regional level, Latin America does not follow a single trajectory.
+    - Venezuela and El Salvador show sustained declines.
+    - Brazil and Ecuador display more mixed trajectories, including periods of improvement.
+
+**Overall, these findings highlight that democratic change is not uniform across countries or regions. Rather, electoral democracy evolves through distinct national trajectories, even within the same geographic region.**
+
